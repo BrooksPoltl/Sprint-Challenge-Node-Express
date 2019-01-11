@@ -78,8 +78,84 @@ server.post('/api/projects', (req, res) => {
         );
 });
 
-//update project and post
+//update project and action
+
+server.put('/api/projects/:id', (req, res) => {
+    const id = req.params.id;
+    const projectBody = req.body;
+    projectDB
+        .update(id, projectBody)
+        .then(result => {
+            if (!result) {
+                return res.status(404).json({ errorMessage: 'no post by that id' })
+            } else {
+                projectDB.get(id).then(project => {
+                    res.json(project);
+                })
+            }
+        })
+        .catch(err => {
+            return res.status(500).json({ errorMessage: 'internal error' })
+        })
+})
+
+server.put('/api/actions/:id', (req, res) => {
+    const id = req.params.id;
+    const actionBody = req.body;
+    actionDB
+        .update(id, actionBody)
+        .then(result => {
+            if (!result) {
+                return res.status(404).json({ errorMessage: 'no post by that id' })
+            } else {
+                actionDB.get(id).then(action => {
+                    res.json(action);
+                })
+            }
+        })
+        .catch(err => {
+            return res.status(500).json({ errorMessage: 'internal error' })
+        })
+})
+
+// delete Actions and Projects
+
+server.delete('/api/actions/:id', (req, res) => {
+    const id = req.params.id;
+    actionDB
+        .remove(id)
+        .then(action => {
+            res.json(action);
+        })
+        .catch(err => {
+            res.status(500).json({ error: 'the post could not be retrieved' });
+        });
+});
+
+server.delete('/api/projects/:id', (req, res) => {
+    const id = req.params.id;
+    projectDB
+        .remove(id)
+        .then(project => {
+            res.json(project);
+        })
+        .catch(err => {
+            res.status(500).json({ error: 'the user could not be retrieved' });
+        });
+});
+
+// get projects actions 
 
 
+server.get('/api/projects/actions/:id', (req, res) => {
+    const id = req.params.id
+    projectDB.getProjectActions(id)
+        .then(project => {
+            res.json(project)
+        })
+        .catch(err => {
+            res.status(500).json({ error: 'cannot retrieve that id' })
+        })
+})
 module.exports = server;
 
